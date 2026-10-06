@@ -7,7 +7,7 @@ Date: 2026-10-06. All numbers are from `report/results.csv`, computed by `analyz
 **Proposal: ITERATE.** Neither kill nor scale fires, under any reading of "both sets". The hypothesis (a local judge at or above 0.9x Sonnet kappa AND 1 s/item or less) is not met by any single model. The two conditions split across models:
 
 - MiniCheck-FT5 meets the latency target (p50 0.18-0.98 s) but is far below 0.9x on RAGTruth.
-- Qwen3-4B reaches 0.93x on WiCE but runs at 4.7-18.8 s/item p50.
+- Qwen3-4B reaches 0.93x on WiCE but runs at 4.8-18.8 s/item p50.
 
 Overall confidence in the proposal: **75%**.
 
