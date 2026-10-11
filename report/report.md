@@ -9,7 +9,7 @@ Date: 2026-10-06. All numbers are from `report/results.csv`, computed by `analyz
 - MiniCheck-FT5 meets the latency target (p50 0.18-0.98 s) but is far below 0.9x on RAGTruth.
 - Qwen3-4B reaches 0.93x on WiCE but runs at 4.8-18.8 s/item p50.
 
-Overall confidence in the proposal: **75%**.
+Overall confidence in the proposal: **medium-high (70%)**.
 
 ## Rule application (issue 146)
 
@@ -21,7 +21,18 @@ Overall confidence in the proposal: **75%**.
 | WiCE | 0.548 | Qwen3-4B 0.512 (0.93x) | Qwen3-4B 0.512 (0.93x) |
 | XSum | 0.418 | MiniCheck 0.560 (1.34x) | MiniCheck 0.453 (1.08x) |
 | CNN | 0.469 | MiniCheck 0.375 (0.80x) | Phi-4-mini 0.406 (0.87x) |
-| ExpertQA | 0.165 | Qwen3-4B 0.227 (1.37x) | Qwen3-4B 0.233 (1.41x) |
+| ExpertQA | 0.165 | Qwen3-4B 0.227 (1.37x) | Phi-4-mini 0.273 (1.66x), thr 0.95 |
+
+Ratio 95% bootstrap CIs for the headline cells (the CI resamples our items only; RAIM's Sonnet kappa is treated as a fixed constant, so the true uncertainty is wider):
+
+| cell | ratio [95% CI] |
+|---|---|
+| RAGTruth, Qwen3-4B @0.5 | 0.51 [0.35, 0.67] |
+| RAGTruth, Qwen3-4B tuned | 0.78 [0.60, 0.94] |
+| WiCE, Qwen3-4B (both) | 0.93 [0.71, 1.15] |
+| XSum, MiniCheck @0.5 | 1.34 [1.12, 1.55] |
+| CNN, MiniCheck @0.5 | 0.80 [0.33, 1.26] |
+| ExpertQA, Qwen3-4B @0.5 | 1.37 [0.76, 2.03] |
 
 - **Kill** (best below 0.8x on both): not met. WiCE, XSum and ExpertQA are at or above 0.93x.
 - **Scale** (at or above 0.9x on both): not met. RAGTruth is 0.51x at 0.5 and 0.78x tuned, and CNN is below 0.9x at 0.5.
@@ -66,7 +77,7 @@ Latency is per item, wall clock on the GTX 1660 Ti, from the `samples` split. Pe
 | CNN | 0.469 | 0.349 | 0.349 | 0.375 | 0.312 (Qwen) |
 | ExpertQA | 0.165 | 0.235 | 0.174 | 0.200 | 0.227 (Qwen) |
 
-Our MiniCheck's κ agrees with RAIM's MiniCheck within our 95% CI on all 5 sets (largest gap XSum, 0.560 vs 0.484). That is good evidence that our harness is sound. RAIM's panel and Sonnet are both better than any of our single local judges on RAGTruth, which is consistent with RAIM's finding that one strong judge dominates there.
+Our MiniCheck's κ agrees with RAIM's MiniCheck within our 95% CI on all 5 sets (largest gap XSum, 0.560 vs 0.484). This is a loose check (wide CIs, so it would not detect a small bias) and it covers only the data, metric and MiniCheck scoring path. It does not validate the causal-LM prompt, tokenisation or logprob path used for Qwen3-4B and Phi-4-mini. RAIM's panel and Sonnet are both better than any of our single local judges on RAGTruth, which is consistent with RAIM's finding that one strong judge dominates there.
 
 ### Where our samples differ from RAIM's, so the comparison is NOT like for like
 
@@ -84,18 +95,29 @@ Our MiniCheck's κ agrees with RAIM's MiniCheck within our 95% CI on all 5 sets 
 
 | # | Finding | Confidence |
 |---|---|---|
-| F1 | Proposal is ITERATE: neither kill (WiCE/XSum/ExpertQA ≥0.9x) nor scale (RAGTruth is 0.51x at 0.5 and 0.78x tuned) fires, under any reading of "both sets". | 85% |
-| F2 | No local judge meets 0.9x kappa and 1 s/item or less together. Causal LMs are 4-19 s p50, about 10-20x too slow. This is a consequence of the 4-bit bitsandbytes path on a 1660 Ti (no tensor cores, fp16 compute), not necessarily of the models. | 85% (speed measured; attribution to hardware/quantisation path 60%) |
-| F3 | RAGTruth is the weak set: every local judge is below 0.8x Sonnet at 0.5, and all but Qwen tuned are far below. | 80% |
-| F4 | On WiCE, Qwen3-4B (0.93x) and Phi-4-mini (0.89x) are close to Sonnet in point estimate. The CIs (0.39-0.63 for κ, ratios roughly 0.7-1.15) cannot separate them from either 0.8x or 1.0x. | 55%. BELOW THRESHOLD, not used for the proposal. |
-| F5 | On XSum, CNN and ExpertQA, local judges match or beat RAIM Sonnet's low baselines (XSum 0.418, ExpertQA 0.165). This is a weak bar (ExpertQA Sonnet κ is 0.165, near noise), so the "≥1.2x" ratios there are not evidence of quality. | 70% |
-| F6 | Calibration-tuned thresholds help or hurt unpredictably. Qwen RAGTruth goes 0.307→0.467 (thr 0.95). Phi CNN goes 0.031→0.406 (thr 0.97, because Phi predicted "yes" on 98% of items at 0.5). MiniCheck ExpertQA goes 0.200→0.060. A 50-item calib split is too small to trust (threshold-tuning gain on RAGTruth for Qwen). | 50%. BELOW THRESHOLD. The 50-item split is itself the limiting factor. |
-| F7 | All judges are poorly calibrated: ECE 0.14-0.44 (10 bins). Phi-4-mini is best on RAGTruth (0.141) and worst on CNN (0.444). MiniCheck is lowest on XSum (0.154). | 80% |
-| F8 | Our MiniCheck κ agrees with RAIM's MiniCheck κ within our CIs on all 5 sets (wide CIs, so this is a loose check). The harness is credible. | 70% |
-| F9 | Peak VRAM is 2.7-3.9 GB for every model (MiniCheck 3.3-3.9 GB in fp32). All fit the 6 GB card with headroom. | 90% |
-| F10 | CNN (n=64) rankings and ratios are not informative (CI half-width about 0.2). | 40%. BELOW THRESHOLD. |
+| F1 | Proposal is ITERATE: neither kill (WiCE/XSum/ExpertQA ≥0.9x) nor scale (RAGTruth is 0.51x at 0.5 and 0.78x tuned) fires, under any reading of "both sets". | high (85%) |
+| F2 | No local judge meets 0.9x kappa and 1 s/item or less together. Causal LMs are 4-19 s p50, about 10-20x too slow. This is a consequence of the 4-bit bitsandbytes path on a 1660 Ti (no tensor cores, fp16 compute), not necessarily of the models. | high (85%) for speed measured; medium (60%) for attribution to hardware/quantisation path |
+| F3 | RAGTruth is the weak set: every local judge is below 0.8x Sonnet at 0.5, and all but Qwen tuned are far below. | medium-high (80%) |
+| F4 | On WiCE, Qwen3-4B (0.93x) and Phi-4-mini (0.89x) are close to Sonnet in point estimate. The CIs (0.39-0.63 for κ, ratios roughly 0.7-1.15) cannot separate them from either 0.8x or 1.0x. | low-medium (55%). BELOW THRESHOLD, not used for the proposal. |
+| F5 | On XSum, CNN and ExpertQA, local judges match or beat RAIM Sonnet's low baselines (XSum 0.418, ExpertQA 0.165). This is a weak bar (ExpertQA Sonnet κ is 0.165, near noise), so the "≥1.2x" ratios there are not evidence of quality. | medium-high (70%) |
+| F6 | Calibration-tuned thresholds help or hurt unpredictably. Qwen RAGTruth goes 0.307→0.467 (thr 0.95). Phi CNN goes 0.031→0.406 (thr 0.97, because Phi predicted "yes" on 98% of items at 0.5). MiniCheck ExpertQA goes 0.200→0.060. A 50-item calib split is too small to trust (threshold-tuning gain on RAGTruth for Qwen). | low-medium (50%). BELOW THRESHOLD. The 50-item split is itself the limiting factor. |
+| F7 | All judges are poorly calibrated: ECE 0.14-0.44 (10 bins). Phi-4-mini is best on RAGTruth (0.141) and worst on CNN (0.444). MiniCheck is lowest on XSum (0.154). | medium-high (80%) |
+| F8 | Our MiniCheck κ agrees with RAIM's MiniCheck κ within our CIs on all 5 sets (wide CIs, so this is a loose check). The data and metric plumbing and the MiniCheck path are credible; the causal-LM path is not validated by this check. | medium-high (70%) |
+| F9 | Peak VRAM is 2.7-3.9 GB for every model (MiniCheck 3.3-3.9 GB in fp32). All fit the 6 GB card with headroom. | high (90%) |
+| F10 | CNN (n=64) rankings and ratios are not informative (CI half-width about 0.2). | low (40%). BELOW THRESHOLD. |
 
-**Overall confidence: 75%.** It is the lower of the proposal confidence (85%) and the sample-construction caveats. The proposal rests on F1, F2, F3, F5, F7, F8 and F9 only. F4, F6 and F10 were not used.
+**Overall confidence: medium-high (70%).** Rule: overall = the lowest confidence among the findings the proposal rests on (F1, F2, F3, F5, F7, F8, F9), which is 70% (F5, F8). F1 (85%) rests on arithmetic over our own numbers plus RAIM's published Sonnet kappa; the sample-construction caveats are carried by F5 and F8. F4, F6 and F10 were not used. (An earlier draft said 75%; revised after the audit because 75% exceeded two supporting findings.)
+
+## Metric glossary (standard terms)
+
+- **Cohen's kappa (κ)**: chance-corrected agreement between judge and gold labels. κ = (p_o - p_e) / (1 - p_e), p_o = observed agreement, p_e = sum over classes of P(gold=c) x P(pred=c). Cohen (1960), Educational and Psychological Measurement 20(1).
+- **Balanced accuracy (bacc)**: mean of per-class recall, (TPR + TNR) / 2. Brodersen et al. (2010), ICPR.
+- **Expected calibration error (ECE)**: sum over bins b of (|B_b|/n) x |acc(B_b) - conf(B_b)|; here 10 equal-width bins on p_yes (P(supported)), acc = gold-positive rate, conf = mean p_yes in the bin. Guo et al. (2017), ICML, "On Calibration of Modern Neural Networks"; Naeini et al. (2015), AAAI.
+- **p_yes**: softmax over the Yes/No token logits at the answer position, P(Yes) (judge.py). MiniCheck uses its own supported-probability output.
+- **Bootstrap percentile CI**: 1,000 resamples of items with replacement, 2.5th and 97.5th percentiles. Efron and Tibshirani (1993), An Introduction to the Bootstrap.
+- **Latency p50 / p95**: 50th / 95th percentile of per-item wall-clock time.
+- **Ratio**: local κ / RAIM Sonnet κ. This is a convenience ratio defined by the issue's hypothesis, not a standard metric; its CI is in the table above.
+- **RAIM** (refs/2609.39229.txt): Sonnet and stacked-panel κ from Table 1, MiniCheck (Flan-T5-L column) κ from Table 12. All values were re-checked against those tables.
 
 ## Proposal
 
@@ -112,7 +134,7 @@ Our MiniCheck's κ agrees with RAIM's MiniCheck within our 95% CI on all 5 sets 
 **What worked**
 
 - The resumable harness: `judge.py` skipped finished ids, so inference survived a machine shutdown with no lost work.
-- MiniCheck reproduced RAIM's MiniCheck numbers, which validates the data and metric plumbing.
+- MiniCheck reproduced RAIM's MiniCheck numbers within our (wide) CIs, which supports the data and metric plumbing (not the causal-LM path).
 - Single-token Yes/No logprobs gave usable p_yes and an ECE for free.
 
 **What failed**
