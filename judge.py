@@ -149,7 +149,7 @@ class CausalJudge:
         raise RuntimeError("no single-token id for " + cands[0])
 
     def build(self, item, set_name, ctx):
-        if set_name == "ragtruth":
+        if set_name.startswith("ragtruth"):
             body = QA_PROMPT.format(q=item.get("question", ""), ctx=ctx, resp=item["response"])
         else:
             body = CLAIM_PROMPT.format(ctx=ctx, resp=item["response"])
