@@ -1,6 +1,6 @@
 # A: cascade (MiniCheck accepts, LM takes the rest)
 
-## ragtruth n=300, LM=Qwen_Qwen3-4B-Instruct-2507 (PRIMARY); Sonnet kappa 0.601, target 0.9x = 0.541
+## [PRIMARY] ragtruth n=300, LM = Qwen_Qwen3-4B-Instruct-2507; Sonnet kappa 0.601, target 0.9x = 0.541
 
 | quantity | out-of-fold point | nested 95% CI |
 |---|---|---|
@@ -12,6 +12,8 @@
 | LM-alone error | 0.347 | [0.297, 0.400] (n=1000) |
 | cascade error minus LM-alone error | -0.003 | [-0.040, 0.030] (n=1000) |
 
+Cost (prereg: (1 - coverage) x LM p50 latency): LM p50 8.46 s/item, coverage 0.213 -> 6.65 s/item expected vs 8.46 s/item LM alone.
+
 Operating points (confusion rows tn/fp/fn/tp of the accepted subset, y=truth, pred=MiniCheck; prevalence = share faithful):
 
 | point | n accepted | tn | fp | fn | tp | prev accepted | prev full | bacc (descr.) | selective kappa |
@@ -21,7 +23,7 @@ Operating points (confusion rows tn/fp/fn/tp of the accepted subset, y=truth, pr
 
 Descriptive: AURC 0.286, E-AURC 0.201, random-confidence baseline (overall error) 0.380; MiniCheck alone kappa 0.240, LM alone kappa 0.307.
 
-## ragtruth n=300, LM=microsoft_Phi-4-mini-instruct (exploratory); Sonnet kappa 0.601, target 0.9x = 0.541
+## [SECONDARY (exploratory)] ragtruth n=300, LM = microsoft_Phi-4-mini-instruct; Sonnet kappa 0.601, target 0.9x = 0.541
 
 | quantity | out-of-fold point | nested 95% CI |
 |---|---|---|
@@ -33,6 +35,8 @@ Descriptive: AURC 0.286, E-AURC 0.201, random-confidence baseline (overall error
 | LM-alone error | 0.430 | [0.377, 0.487] (n=1000) |
 | cascade error minus LM-alone error | -0.027 | [-0.117, 0.020] (n=1000) |
 
+Cost (prereg: (1 - coverage) x LM p50 latency): LM p50 7.06 s/item, coverage 0.213 -> 5.55 s/item expected vs 7.06 s/item LM alone.
+
 Operating points (confusion rows tn/fp/fn/tp of the accepted subset, y=truth, pred=MiniCheck; prevalence = share faithful):
 
 | point | n accepted | tn | fp | fn | tp | prev accepted | prev full | bacc (descr.) | selective kappa |
@@ -42,7 +46,7 @@ Operating points (confusion rows tn/fp/fn/tp of the accepted subset, y=truth, pr
 
 Descriptive: AURC 0.286, E-AURC 0.201, random-confidence baseline (overall error) 0.380; MiniCheck alone kappa 0.240, LM alone kappa 0.140.
 
-## wice n=172, LM=Qwen_Qwen3-4B-Instruct-2507 (PRIMARY); Sonnet kappa 0.548, target 0.9x = 0.493
+## [PRIMARY] wice n=172, LM = Qwen_Qwen3-4B-Instruct-2507; Sonnet kappa 0.548, target 0.9x = 0.493
 
 | quantity | out-of-fold point | nested 95% CI |
 |---|---|---|
@@ -54,6 +58,8 @@ Descriptive: AURC 0.286, E-AURC 0.201, random-confidence baseline (overall error
 | LM-alone error | 0.244 | [0.180, 0.308] (n=1000) |
 | cascade error minus LM-alone error | 0.012 | [-0.041, 0.081] (n=1000) |
 
+Cost (prereg: (1 - coverage) x LM p50 latency): LM p50 18.79 s/item, coverage 0.814 -> 3.50 s/item expected vs 18.79 s/item LM alone.
+
 Operating points (confusion rows tn/fp/fn/tp of the accepted subset, y=truth, pred=MiniCheck; prevalence = share faithful):
 
 | point | n accepted | tn | fp | fn | tp | prev accepted | prev full | bacc (descr.) | selective kappa |
@@ -63,7 +69,7 @@ Operating points (confusion rows tn/fp/fn/tp of the accepted subset, y=truth, pr
 
 Descriptive: AURC 0.173, E-AURC 0.123, random-confidence baseline (overall error) 0.297; MiniCheck alone kappa 0.407, LM alone kappa 0.512.
 
-## wice n=172, LM=microsoft_Phi-4-mini-instruct (exploratory); Sonnet kappa 0.548, target 0.9x = 0.493
+## [SECONDARY (exploratory)] wice n=172, LM = microsoft_Phi-4-mini-instruct; Sonnet kappa 0.548, target 0.9x = 0.493
 
 | quantity | out-of-fold point | nested 95% CI |
 |---|---|---|
@@ -74,6 +80,8 @@ Descriptive: AURC 0.173, E-AURC 0.123, random-confidence baseline (overall error
 | cascade error | 0.238 | [0.215, 0.320] (n=1000) |
 | LM-alone error | 0.256 | [0.192, 0.320] (n=1000) |
 | cascade error minus LM-alone error | -0.017 | [-0.064, 0.076] (n=1000) |
+
+Cost (prereg: (1 - coverage) x LM p50 latency): LM p50 15.48 s/item, coverage 0.814 -> 2.88 s/item expected vs 15.48 s/item LM alone.
 
 Operating points (confusion rows tn/fp/fn/tp of the accepted subset, y=truth, pred=MiniCheck; prevalence = share faithful):
 

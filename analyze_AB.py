@@ -124,13 +124,15 @@ def part_A():
                 bs.append(summarize(cross_fit(c, y, pm, pl, w, folds_for(y, rng), target), y, pm, pl, w))
             res[s, lm] = (pt, bs, target)
             tag = "PRIMARY" if lm == "qw" else "exploratory"
-            out += [f"## {s} n={len(y)}, LM={M[lm]} ({tag}); Sonnet kappa {SONNET[s]}, target 0.9x = {target:.3f}", "",
+            lat = np.median([json.loads(l)["latency_ms"] for l in open(f"preds/{M[lm]}__{s}.jsonl")]) / 1000
+            hdr = "PRIMARY" if lm == "qw" else "SECONDARY (exploratory)"
+            out += [f"## [{hdr}] {s} n={len(y)}, LM = {M[lm]}; Sonnet kappa {SONNET[s]}, target 0.9x = {target:.3f}", "",
                     "| quantity | out-of-fold point | nested 95% CI |", "|---|---|---|"]
             for k, nm in (("cov", "A1 coverage"), ("sel_kappa", "selective kappa (accepted)"), ("sel_risk", "selective risk (accepted)"),
                           ("a2", "A2 cascade kappa (all items)"), ("casc_err", "cascade error"), ("lm_err", "LM-alone error"),
                           ("err_diff", "cascade error minus LM-alone error")):
                 out.append(f"| {nm} | {pt[k]:.3f} | {ci([b[k] for b in bs])} |")
-            out += ["", f"Operating points (confusion rows tn/fp/fn/tp of the accepted subset, y=truth, pred=MiniCheck; prevalence = share faithful):", ""]
+            out += ["", f"Cost (prereg: (1 - coverage) x LM p50 latency): LM p50 {lat:.2f} s/item, coverage {pt['cov']:.3f} -> {(1 - pt['cov']) * lat:.2f} s/item expected vs {lat:.2f} s/item LM alone.", "", f"Operating points (confusion rows tn/fp/fn/tp of the accepted subset, y=truth, pred=MiniCheck; prevalence = share faithful):", ""]
             out += ["| point | n accepted | tn | fp | fn | tp | prev accepted | prev full | bacc (descr.) | selective kappa |", "|---|---|---|---|---|---|---|---|---|---|"]
             for nm, a in (("out-of-fold pooled", acc), (f"deployable tau={tau_d:.3f} (fit on all n, in-sample)", acc_d)):
                 d = conf(a, y, pm)
