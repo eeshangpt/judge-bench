@@ -1,6 +1,6 @@
 # Pre-registration B2, issue #146: fresh-data confirmation of B on FaithBench
 
-Status: DRAFT v3 (after agy rounds 1-2) until tagged `prereg-B2-frozen`. Local only, nothing pushed. Owner approved the plan on 2026-10-28.
+Status: v3 FROZEN on tag `prereg-B2-frozen`. Audit outcome: agy round 3 CHANGES, owner decision freeze 2026-10-28; open findings listed (strict tier rule and point-estimate gate, tiers built from this dataset own rates, same-family and filter-generator checks not gating, uncalibrated 0.5 cut, undefined tau-b imputed as 0, pooled item-level metrics, generator-level permutation null). Local only, nothing pushed. Owner approved the plan on 2026-10-28.
 Scope: does a small local judge rank summarizers by hallucination rate the way human labels do, on data it was not developed on? B (RAGTruth, 6 generators, `prereg-AB.md`) said SCALE as a pilot; B2 asks the same question on a second dataset.
 
 ## Data
