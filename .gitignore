@@ -2,3 +2,13 @@
 data/
 __pycache__/
 *.pyc
+refs/
+out/*.log
+inspect_*.py
+install_*.sh
+list_files.py
+queue/
+qtest/
+smoke.txt
+smoke_preds/
+prefetch_bin.py
