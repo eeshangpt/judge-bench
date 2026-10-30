@@ -34,7 +34,7 @@ def panel(ax, lim, title):
 panel(a, 0.8, "FaithBench: 10 generators, 80 summaries each")
 for tier, col in (("High", HI), ("Low", LO)):
     p = [(h, u) for _, t, h, u in fb if t == tier]
-    a.scatter(*zip(*p), s=150, color=col, edgecolor="k", zorder=3, label=f"{tier} tier")
+    a.scatter(*zip(*p), s=150, color=col, edgecolor="k", zorder=3, label=f"{tier}-hallucination tier")
 a.text(0.70, 0.745, "y = x", ha="right", fontsize=13, color="#555")
 a.legend(loc="upper left", fontsize=14, frameon=False)
 
