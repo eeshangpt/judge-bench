@@ -11,7 +11,7 @@ I wrote each plan first, had it reviewed, froze it with a git tag, and only then
 | [prereg-AB.md](prereg-AB.md) | `prereg-AB-frozen` | 2026-10-28 02:20 +05:30 |
 | [prereg-B2.md](prereg-B2.md) | `prereg-B2-frozen` | 2026-10-28 22:38 +05:30 |
 
-The plans are kept exactly as frozen, including internal references that I did not edit out. #146 and similar refer to my private tracker; "the owner" in the plans is me. Code was written with AI coding assistants; a second model reviewed each plan before it was frozen.
+The plans are kept exactly as frozen, including internal references that I did not edit out. #146 and similar refer to my private tracker; "the owner" in the plans is me. I set the question and the rules, made the go and kill calls, and used AI coding agents to write the code and draft the plans; a second model reviewed each plan before I froze it.
 
 ## Results
 
